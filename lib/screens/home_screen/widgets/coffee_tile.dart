@@ -20,8 +20,14 @@ class CoffeeTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: ThemeColors.primanyWhite,
-          borderRadius: BorderRadius.circular(16)),
+          color: ThemeColors.primaryWhite,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+                color: ThemeColors.primaryBlack.withOpacity(0.05),
+                blurRadius: 4,
+                offset: const Offset(4, 4))
+          ]),
       child: Stack(
         children: [
           Column(
@@ -61,11 +67,19 @@ class CoffeeTile extends StatelessWidget {
                         height: 32,
                         width: 32,
                         decoration: BoxDecoration(
-                            color: ThemeColors.brownColor,
-                            borderRadius: BorderRadius.circular(10)),
+                          color: ThemeColors.brownColor,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                                color:
+                                    ThemeColors.primaryBlack.withOpacity(0.2),
+                                blurRadius: 4,
+                                offset: const Offset(2, 2))
+                          ],
+                        ),
                         child: Icon(
                           Icons.add,
-                          color: ThemeColors.primanyWhite,
+                          color: ThemeColors.primaryWhite,
                         )),
                   )
                 ],
@@ -91,7 +105,7 @@ class CoffeeTile extends StatelessWidget {
                 Text(
                   rating.toStringAsFixed(1),
                   style: Styles.titleMedium(context)
-                      .textColor(ThemeColors.primanyWhite),
+                      .textColor(ThemeColors.primaryWhite),
                 ),
               ],
             ),

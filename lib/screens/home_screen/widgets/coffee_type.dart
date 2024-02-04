@@ -22,20 +22,29 @@ class CoffeeType extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               onTap: provider.selectedCoffeeType == newList[index]
                   ? null
-                  : () => provider.selectedCoffeeType = newList[index],
+                  : () {
+                      provider.selectedCoffeeType = newList[index];
+                      FocusScope.of(context).unfocus();
+                    },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                height: 40,
+                margin: const EdgeInsets.symmetric(vertical: 3),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: provider.selectedCoffeeType.isNotEmpty
                       ? (provider.selectedCoffeeType == newList[index]
                           ? ThemeColors.brownColor
-                          : ThemeColors.primanyWhite)
+                          : ThemeColors.primaryWhite)
                       : index == 0
                           ? ThemeColors.brownColor
-                          : ThemeColors.primanyWhite,
+                          : ThemeColors.primaryWhite,
                   borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                        color: ThemeColors.primaryBlack.withOpacity(0.2),
+                        blurRadius: 2,
+                        offset: const Offset(2, 2))
+                  ],
                 ),
                 child: Text(
                   newList[index],

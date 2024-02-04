@@ -16,7 +16,7 @@ class BottomNavigation extends StatelessWidget {
           height: 75,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: ThemeColors.primanyWhite,
+            color: ThemeColors.primaryWhite,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             boxShadow: [
               BoxShadow(

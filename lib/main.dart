@@ -1,5 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:first_challange_coffee_shop/screens/phone_input_screen/phone_input_screen.dart';
 import 'package:first_challange_coffee_shop/screens/cart_screen/cart_screen.dart';
-import 'package:first_challange_coffee_shop/screens/colors_screen/colors_screen.dart';
+import 'package:first_challange_coffee_shop/screens/add_coffee_screen/add_coffee_screen.dart';
 import 'package:first_challange_coffee_shop/screens/dashboard_screen/dashboard_screen.dart';
 import 'package:first_challange_coffee_shop/provider/provider.dart';
 import 'package:first_challange_coffee_shop/screens/favorite_screen/favorite_screen.dart';
@@ -8,19 +10,26 @@ import 'package:first_challange_coffee_shop/screens/notification_screen/notifica
 import 'package:first_challange_coffee_shop/screens/profile_screen/profile_screen.dart';
 import 'package:first_challange_coffee_shop/utils/themes/colors_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'screens/splash_screen/splash_screen.dart';
 
-void main(List<String> args) {
+void main(List<String> args) async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+      options: const FirebaseOptions(
+    apiKey: "AIzaSyBqsbowJ5DT6eBb4zbMhpDEs5g5Qd8OdgE",
+    appId: "1:191122015582:android:a197d0b0d11270226fbbcf",
+    messagingSenderId: "191122015582",
+    projectId: "coffee-shop-3133f",
+  ));
+
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => MyProvider())],
       child: const MyApp()));
 }
-
-// ColorScheme kColorScheme =
-//     ColorScheme.fromSeed(seedColor: const Color(0xffC67C4E));
-// ColorScheme kDarkColorScheme =
-//     ColorScheme.fromSeed(seedColor: Colors.deepPurple);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -36,12 +45,13 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/dashboardScreen': (_) => const DashboardScreen(),
-        '/colorsScreen': (_) => const ColorsScreen(),
+        '/addCoffeeScreen': (_) => const AddCoffeeScreen(),
         '/homeScreen': (_) => const HomeScreen(),
         '/favoriteScreen': (_) => const FavoriteScreen(),
         '/cartScreen': (_) => const CartScreen(),
         '/notificationScreen': (_) => const NotificationScreen(),
         '/profileScreen': (_) => const ProfileScreen(),
+        '/phoneInputScreen': (_) => const PhoneInputScreen(),
       },
       home: const SplashScreen(),
     );

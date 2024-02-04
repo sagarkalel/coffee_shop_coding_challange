@@ -38,17 +38,17 @@ class ThemeColors {
       Theme.of(context).colorScheme.onInverseSurface;
   static Color shadow(context) => Theme.of(context).colorScheme.shadow;
   static Color hintColor(context) => Theme.of(context).hintColor;
-  static Color inActive(context) => const Color(0xff8D8D8D);
+  static Color inActive(context) => const Color(0xff8D8D8D).withOpacity(0.5);
 
   static Color get brownColor => const Color(0xffC67C4E);
   static Color get primaryBlack => const Color(0xff131313);
   static Color get secondaryBlack => const Color(0xff313131);
   static Color get primaryText => const Color(0xffDDDDDD);
   static Color get secondaryText => const Color(0xffB7B7B7);
-  static Color get hintText => const Color(0xff989898);
+  static Color get hintText => const Color(0xff989898).withOpacity(0.9);
   static Color get darkSecondaryText => const Color(0xff2F4B4E);
-  static Color get greyColor => Colors.grey;
-  static Color get primanyWhite => Colors.white;
+  static Color get greyColor => Colors.grey.withOpacity(0.8);
+  static Color get primaryWhite => Colors.white;
   static Color get secondaryWhite => Colors.white70;
   static Color get scaffoldBackgroundColor => const Color(0xffF9F9F9);
   static Color get amberColor => const Color(0xffFBBE21);
