@@ -6,6 +6,7 @@ import 'package:first_challange_coffee_shop/utils/themes/colors_theme.dart';
 import 'package:first_challange_coffee_shop/utils/themes/textstyles_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -43,22 +44,25 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.coffee,
-              size: 150,
-              color: ThemeColors.brownColor.withOpacity(0.2),
-            ),
-            xGap(16),
-            Text(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          FadeInImage(
+            fit: BoxFit.cover,
+            placeholder: MemoryImage(kTransparentImage),
+            image: const AssetImage("assets/images/coffee_image_logo_2.png"),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Text(
               "Welcome to coffee shop!",
-              style: Styles.headlineLarge(context).weight(FontWeight.w600),
+              textAlign: TextAlign.center,
+              style: Styles.displayMedium(context)
+                  .weight(FontWeight.w800)
+                  .textColor(ThemeColors.primaryWhite),
             ),
-          ],
-        ),
+          ).padXX(30).padYBottom(100),
+        ],
       ),
     );
   }

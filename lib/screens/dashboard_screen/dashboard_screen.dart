@@ -5,7 +5,6 @@ import 'package:first_challange_coffee_shop/screens/favorite_screen/favorite_scr
 import 'package:first_challange_coffee_shop/screens/home_screen/home_screen.dart';
 import 'package:first_challange_coffee_shop/screens/notification_screen/notification_screen.dart';
 import 'package:first_challange_coffee_shop/utils/components/dialogs.dart';
-import 'package:first_challange_coffee_shop/utils/constatnts/routes_constants.dart';
 import 'package:first_challange_coffee_shop/utils/services/api_services.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -53,34 +52,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   appBar: const PreferredSize(
-    //     preferredSize: Size.fromHeight(80),
-    //     child: DashboardAppbar(),
-    //   ),
-    //   bottomNavigationBar: const BottomNavigation(),
-    //   floatingActionButton: FloatingActionButton(
-    //       onPressed: () {
-    //         Navigator.pushNamed(context, AppRoutes.addCoffeeScreen);
-    //       },
-    //       child: const Icon(Icons.add)),
-    //   body: Consumer<MyProvider>(
-    //     builder: (context, provider, child) => provider.currentNavBar == 0
-    //         ? const HomeScreen()
-    //         : provider.currentNavBar == 1
-    //             ? const FavoriteScreen()
-    //             : provider.currentNavBar == 2
-    //                 ? const CartScreen()
-    //                 : const NotificationScreen(),
-    //   ),
-    // );
-
     return Scaffold(
       bottomNavigationBar: const BottomNavigation(),
-      floatingActionButton: FloatingActionButton(
-          onPressed: () =>
-              Navigator.pushNamed(context, AppRoutes.addCoffeeScreen),
-          child: const Icon(Icons.add)),
       body: Consumer<MyProvider>(
         builder: (context, provider, child) => provider.currentNavBar == 0
             ? const HomeScreen()
