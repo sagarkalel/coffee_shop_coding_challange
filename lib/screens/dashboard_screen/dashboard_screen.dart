@@ -22,6 +22,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+    ApiServices.getLoaction();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       bool status = await Permission.location.isGranted;
       debugPrint("location permission status 1: $status");

@@ -42,9 +42,7 @@ class CoffeeDetailsScreen extends StatelessWidget {
                   child: coffeModel.image.isEmpty
                       ? const SizedBox.shrink()
                       : Hero(
-                          tag: isFromBanner
-                              ? "${coffeModel.id}banner"
-                              : coffeModel.id,
+                          tag: "${coffeModel.id}$isFromBanner",
                           child: FadeInImage(
                             placeholder: MemoryImage(kTransparentImage),
                             image: NetworkImage(coffeModel.image),

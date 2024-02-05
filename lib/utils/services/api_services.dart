@@ -41,21 +41,28 @@ class ApiServices {
 
   static Future<void> getCurrentPlacesFromLatlong(
       {required double latitude, required double longitude}) async {
-    List<Placemark> placemarks =
-        await placemarkFromCoordinates(latitude, longitude);
-    Placemark place = placemarks[0];
-    MyProvider().myLocality = "${place.locality}, ${place.subLocality}";
-    debugPrint("this is locality: ${place.locality}, ${place.subLocality}");
-    final id = DateTime.now().toString();
-    MyProvider().addAddress = Address(
-      landmark: "${place.administrativeArea}, ${place.subAdministrativeArea}",
-      house: '${place.name}',
-      id: id,
-      locality: "${place.street}, ${place.locality}, ${place.subLocality}",
-      receiverName: MyProvider().userName,
-      receiverContact: MyProvider().phoneNumber,
-    );
-    if (MyProvider().inUsedAddress.isEmpty) MyProvider().inUsedAddress = id;
+    try {
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(latitude, longitude);
+      Placemark place = placemarks[0];
+      MyProvider().myLocality =
+          "${place.street}, ${place.locality}, ${place.subLocality}";
+      debugPrint(
+          "this is locality: ${place.street}, ${place.locality}, ${place.subLocality}");
+      final id = DateTime.now().toString();
+      MyProvider().addAddress = Address(
+        landmark: "${place.subAdministrativeArea}, ${place.administrativeArea}",
+        house: '${place.name}',
+        id: id,
+        locality: "${place.street}, ${place.subLocality}, ${place.locality}",
+        receiverName: MyProvider().userName,
+        receiverContact: MyProvider().phoneNumber,
+      );
+      if (MyProvider().inUsedAddress.isEmpty) MyProvider().inUsedAddress = id;
+      debugPrint("successfully updated address data locally");
+    } catch (e) {
+      debugPrint("error is getting while updating location data: $e");
+    }
   }
 
   static String getInUsedLocality() {
