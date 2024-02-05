@@ -141,6 +141,6 @@ class DiscountBottomsheet extends StatelessWidget {
           ),
         ),
       ],
-    ).padYY(30);
+    ).padYBottom(30);
   }
 }
