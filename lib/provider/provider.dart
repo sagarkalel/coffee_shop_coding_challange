@@ -391,4 +391,47 @@ class MyProvider extends ChangeNotifier {
 
     return finalData;
   }
+
+  final List<Map<String, String>> _notes = [];
+  List<Map<String, String>> get notes => _notes;
+  String getNotesForGivenId(String id) {
+    var data = _notes.where((element) => element.keys.first == id).toList();
+    if (data.isEmpty) {
+      return '';
+    }
+    return data.first[id] ?? '';
+  }
+
+  void addNote(Map<String, String> input) {
+    try {
+      var data = _notes
+          .where((element) => element.keys.first == input.keys.first)
+          .toList();
+      if (data.isEmpty) {
+        _notes.add(input);
+      } else {
+        _notes.removeWhere((element) => element.keys.first == input.keys.first);
+        _notes.add(input);
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error while adding note: $e");
+    }
+  }
+
+  void removeNote(Map<String, String> input) {
+    try {
+      var data = _notes
+          .where((element) => element.keys.first == input.keys.first)
+          .toList();
+      if (data.isEmpty) {
+        debugPrint("note is not found for given id");
+      } else {
+        _notes.removeWhere((element) => element.keys.first == input.keys.first);
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error while adding note: $e");
+    }
+  }
 }

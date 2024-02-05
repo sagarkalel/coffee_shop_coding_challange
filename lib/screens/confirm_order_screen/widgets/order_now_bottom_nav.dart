@@ -1,5 +1,6 @@
 import 'package:first_challange_coffee_shop/data/coffee_model.dart';
 import 'package:first_challange_coffee_shop/provider/provider.dart';
+import 'package:first_challange_coffee_shop/screens/confirm_order_screen/widgets/address_bottomsheet.dart';
 import 'package:first_challange_coffee_shop/utils/constatnts/sizes.dart';
 import 'package:first_challange_coffee_shop/utils/extensions/textstyle_extensions.dart';
 import 'package:first_challange_coffee_shop/utils/extensions/widget_extensions.dart';
@@ -83,7 +84,19 @@ class OrderNowBottomBar extends StatelessWidget {
             width: Sizes.screenX(context) - 60,
             height: 60,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                showModalBottomSheet(
+                  showDragHandle: true,
+                  isScrollControlled: true,
+                  constraints:
+                      BoxConstraints(maxHeight: Sizes.screenY(context) * .75),
+                  context: context,
+                  builder: (context) {
+                    return const AddressBottomsheet(
+                        title: "Your order has successfully placed!");
+                  },
+                );
+              },
               style: ElevatedButton.styleFrom(
                 foregroundColor: ThemeColors.primaryWhite,
                 backgroundColor: ThemeColors.brownColor,

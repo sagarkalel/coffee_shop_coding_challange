@@ -1,5 +1,7 @@
 import 'package:first_challange_coffee_shop/provider/provider.dart';
+import 'package:first_challange_coffee_shop/screens/confirm_order_screen/widgets/address_bottomsheet.dart';
 import 'package:first_challange_coffee_shop/utils/constatnts/routes_constants.dart';
+import 'package:first_challange_coffee_shop/utils/constatnts/sizes.dart';
 import 'package:first_challange_coffee_shop/utils/extensions/textstyle_extensions.dart';
 import 'package:first_challange_coffee_shop/utils/extensions/widget_extensions.dart';
 import 'package:first_challange_coffee_shop/utils/themes/colors_theme.dart';
@@ -39,7 +41,19 @@ class _DashboardAppbarState extends State<DashboardAppbar> {
           Material(
             color: ThemeColors.primaryBlack,
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                showModalBottomSheet(
+                  showDragHandle: true,
+                  isScrollControlled: true,
+                  constraints:
+                      BoxConstraints(maxHeight: Sizes.screenY(context) * .75),
+                  context: context,
+                  builder: (context) {
+                    return const AddressBottomsheet(
+                        title: "Your current Address");
+                  },
+                );
+              },
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

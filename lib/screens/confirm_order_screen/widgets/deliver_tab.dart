@@ -17,7 +17,7 @@ class DeliverTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AddressBar().padXX(30),
+          AddressBar(coffeeId: coffeModel.id).padXX(30),
           yGap(10),
           PlusMinusCoffeeTile(coffeModel: coffeModel).padXX(30),
           yGap(10),

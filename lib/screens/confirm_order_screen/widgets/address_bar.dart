@@ -1,5 +1,8 @@
 import 'package:first_challange_coffee_shop/models/address_model.dart';
 import 'package:first_challange_coffee_shop/provider/provider.dart';
+import 'package:first_challange_coffee_shop/screens/confirm_order_screen/widgets/add_note_bottomsheet.dart';
+import 'package:first_challange_coffee_shop/screens/confirm_order_screen/widgets/address_bottomsheet.dart';
+import 'package:first_challange_coffee_shop/utils/constatnts/sizes.dart';
 import 'package:first_challange_coffee_shop/utils/extensions/textstyle_extensions.dart';
 import 'package:first_challange_coffee_shop/utils/extensions/widget_extensions.dart';
 import 'package:first_challange_coffee_shop/utils/themes/colors_theme.dart';
@@ -9,7 +12,8 @@ import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class AddressBar extends StatelessWidget {
-  const AddressBar({super.key});
+  const AddressBar({super.key, required this.coffeeId});
+  final String coffeeId;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +44,6 @@ class AddressBar extends StatelessWidget {
             ),
             Text(
               detailedAddress,
-              // "Kpg. Sutoyo No. 620, Bilzen, Tanjungbalai.",
               style: Styles.titleSmall(context).textColor(ThemeColors.hintText),
             ),
             yGap(10),
@@ -48,7 +51,19 @@ class AddressBar extends StatelessWidget {
               children: [
                 InkWell(
                   borderRadius: BorderRadius.circular(16),
-                  onTap: () {},
+                  onTap: () {
+                    showModalBottomSheet(
+                      showDragHandle: true,
+                      isScrollControlled: true,
+                      constraints: BoxConstraints(
+                          maxHeight: Sizes.screenY(context) * .75),
+                      context: context,
+                      builder: (context) {
+                        return const AddressBottomsheet(
+                            title: "Your current Address");
+                      },
+                    );
+                  },
                   child: Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -72,7 +87,18 @@ class AddressBar extends StatelessWidget {
                 xGap(8),
                 InkWell(
                   borderRadius: BorderRadius.circular(16),
-                  onTap: () {},
+                  onTap: () {
+                    showModalBottomSheet(
+                      showDragHandle: true,
+                      isScrollControlled: true,
+                      constraints: BoxConstraints(
+                          maxHeight: Sizes.screenY(context) * .75),
+                      context: context,
+                      builder: (context) {
+                        return AddNoteBottomsheet(coffeeId: coffeeId);
+                      },
+                    );
+                  },
                   child: Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -88,13 +114,32 @@ class AddressBar extends StatelessWidget {
                           height: 14,
                           width: 14,
                         ),
-                        const Text('  Add Note'),
+                        Text(provider.getNotesForGivenId(coffeeId).isNotEmpty
+                            ? '  Change Note'
+                            : '  Add Note'),
                       ],
                     ),
                   ),
                 )
               ],
             ),
+            if (provider.getNotesForGivenId(coffeeId).isNotEmpty)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  yGap(8),
+                  Text(
+                    'Note',
+                    style: Styles.titleMedium(context),
+                  ),
+                  Text(
+                    provider.getNotesForGivenId(coffeeId),
+                    style: Styles.bodyMedium(context)
+                        .textColor(ThemeColors.hintText),
+                    maxLines: 3,
+                  ),
+                ],
+              ),
             yGap(8),
             const Divider(),
           ],
