@@ -47,10 +47,12 @@ class ThemeColors {
   static Color get secondaryText => const Color(0xffB7B7B7);
   static Color get hintText => const Color(0xff989898).withOpacity(0.9);
   static Color get darkSecondaryText => const Color(0xff2F4B4E);
+  static Color get darkPrimaryText => const Color(0xff2F2D2C);
   static Color get greyColor => Colors.grey.withOpacity(0.8);
   static Color get primaryWhite => Colors.white;
   static Color get secondaryWhite => Colors.white70;
   static Color get scaffoldBackgroundColor => const Color(0xffF9F9F9);
   static Color get amberColor => const Color(0xffFBBE21);
+  static Color get redColor => const Color(0xffED5151);
   // static Color primary(context) => Theme.of(context).colorScheme.tertiary;
 }

@@ -3,22 +3,29 @@ import 'package:first_challange_coffee_shop/provider/provider.dart';
 import 'package:first_challange_coffee_shop/screens/coffee_details_screen/coffee_details_screen.dart';
 import 'package:first_challange_coffee_shop/screens/home_screen/widgets/coffee_tile.dart';
 import 'package:first_challange_coffee_shop/utils/extensions/widget_extensions.dart';
-import 'package:first_challange_coffee_shop/utils/themes/textstyles_theme.dart';
+import 'package:first_challange_coffee_shop/utils/themes/colors_theme.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CoffeeTileGridview extends StatelessWidget {
-  const CoffeeTileGridview({super.key, this.isForFavorite = false});
-  final bool isForFavorite;
+  const CoffeeTileGridview(
+      {super.key, this.isForFavorite = false, this.isForCart = false});
+  final bool isForFavorite, isForCart;
 
   @override
   Widget build(BuildContext context) {
     return Consumer<MyProvider>(
       builder: (context, provider, child) {
-        List<CoffeModel> coffeeList = provider.allCoffees;
+        List<CoffeeModel> coffeeList = provider.allCoffees;
         if (isForFavorite) {
           coffeeList = coffeeList
               .where((element) => provider.allLikedCoffees.contains(element.id))
+              .toList();
+        } else if (isForCart) {
+          coffeeList = coffeeList
+              .where(
+                  (element) => provider.coffeesAddedInCart.contains(element.id))
               .toList();
         } else {
           if (provider.selectedCoffeeType.isEmpty ||
@@ -39,11 +46,29 @@ class CoffeeTileGridview extends StatelessWidget {
                 .toList();
           }
         }
-        if (coffeeList.isEmpty) {
+        if (coffeeList.isEmpty && provider.isCoffeeDataLoaded) {
           return Center(
-            child: Text(
-              "Sorry, No Coffee found!",
-              style: Styles.headlineSmall(context),
+            child: Column(
+              children: [
+                Icon(
+                  isForCart
+                      ? Icons.no_encryption
+                      : isForFavorite
+                          ? Icons.favorite
+                          : Icons.coffee_rounded,
+                  size: 75,
+                  color: ThemeColors.brownColor.withOpacity(0.2),
+                ),
+                const Text("Sorry, Coffee not found!"),
+              ],
+            ).padYTop(50),
+          );
+        }
+        if (!provider.isCoffeeDataLoaded) {
+          return Center(
+            child: CupertinoActivityIndicator(
+              color: ThemeColors.brownColor,
+              radius: 18,
             ).padYTop(50),
           );
         }
@@ -55,7 +80,7 @@ class CoffeeTileGridview extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 30),
           itemBuilder: (context, index) {
-            CoffeModel currentCoffee = coffeeList[index];
+            CoffeeModel currentCoffee = coffeeList[index];
 
             return InkWell(
                 borderRadius: BorderRadius.circular(16),
@@ -71,9 +96,10 @@ class CoffeeTileGridview extends StatelessWidget {
                 child: CoffeeTile(
                   coffeeType: currentCoffee.coffeeType,
                   mixedWith: currentCoffee.mixedWith,
-                  price: currentCoffee.price.toDouble(),
+                  price: currentCoffee.price,
                   rating: currentCoffee.rating.toDouble(),
-                  onAddCallback: () {},
+                  image: currentCoffee.image,
+                  coffeeId: currentCoffee.id,
                 )).padXRight(16).padYBottom(16);
           },
         );

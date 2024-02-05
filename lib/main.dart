@@ -1,12 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:first_challange_coffee_shop/screens/phone_input_screen/phone_input_screen.dart';
-import 'package:first_challange_coffee_shop/screens/cart_screen/cart_screen.dart';
+import 'package:first_challange_coffee_shop/provider/provider.dart';
 import 'package:first_challange_coffee_shop/screens/add_coffee_screen/add_coffee_screen.dart';
 import 'package:first_challange_coffee_shop/screens/dashboard_screen/dashboard_screen.dart';
-import 'package:first_challange_coffee_shop/provider/provider.dart';
-import 'package:first_challange_coffee_shop/screens/favorite_screen/favorite_screen.dart';
 import 'package:first_challange_coffee_shop/screens/home_screen/home_screen.dart';
-import 'package:first_challange_coffee_shop/screens/notification_screen/notification_screen.dart';
+import 'package:first_challange_coffee_shop/screens/phone_input_screen/phone_input_screen.dart';
 import 'package:first_challange_coffee_shop/screens/profile_screen/profile_screen.dart';
 import 'package:first_challange_coffee_shop/utils/themes/colors_theme.dart';
 import 'package:flutter/material.dart';
@@ -47,9 +44,9 @@ class MyApp extends StatelessWidget {
         '/dashboardScreen': (_) => const DashboardScreen(),
         '/addCoffeeScreen': (_) => const AddCoffeeScreen(),
         '/homeScreen': (_) => const HomeScreen(),
-        '/favoriteScreen': (_) => const FavoriteScreen(),
-        '/cartScreen': (_) => const CartScreen(),
-        '/notificationScreen': (_) => const NotificationScreen(),
+        // '/favoriteScreen': (_) => const FavoriteScreen(),
+        // '/cartScreen': (_) => const CartScreen(),
+        // '/notificationScreen': (_) => const NotificationScreen(),
         '/profileScreen': (_) => const ProfileScreen(),
         '/phoneInputScreen': (_) => const PhoneInputScreen(),
       },

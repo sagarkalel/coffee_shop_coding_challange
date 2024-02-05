@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:first_challange_coffee_shop/data/coffee_model.dart';
+import 'package:first_challange_coffee_shop/data/offer_model.dart';
 import 'package:first_challange_coffee_shop/models/address_model.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -159,6 +161,16 @@ class MyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      _uid = null;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("user signed out successfully!");
+    }
+  }
+
   final TextEditingController _searchController = TextEditingController();
   TextEditingController get searchController => _searchController;
   set setSearchText(String value) {
@@ -203,6 +215,7 @@ class MyProvider extends ChangeNotifier {
     return selectedSizeIndexKey;
   }
 
+  /// liked coffees
   List<String> _allLikedCoffees = [];
   List<String> get allLikedCoffees => _allLikedCoffees;
   set allLikedCoffees(List<String> value) {
@@ -219,10 +232,163 @@ class MyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<CoffeModel> _allCoffees = [];
-  List<CoffeModel> get allCoffees => _allCoffees;
-  set allCoffees(List<CoffeModel> value) {
+  /// coffees added to cart
+  List<String> _coffeesAddedInCart = [];
+  List<String> get coffeesAddedInCart => _coffeesAddedInCart;
+  set coffeesAddedInCart(List<String> value) {
+    _coffeesAddedInCart = value;
+    notifyListeners();
+  }
+
+  void updateCoffeesInCart(String id) {
+    if (_coffeesAddedInCart.contains(id)) {
+      _coffeesAddedInCart.remove(id);
+    } else {
+      _coffeesAddedInCart.add(id);
+    }
+    notifyListeners();
+  }
+
+  List<CoffeeModel> _allCoffees = [];
+  List<CoffeeModel> get allCoffees => _allCoffees;
+  set allCoffees(List<CoffeeModel> value) {
     _allCoffees = value;
     notifyListeners();
+  }
+
+  bool _isCoffeeDataLoaded = false;
+  bool get isCoffeeDataLoaded => _isCoffeeDataLoaded;
+  set isCoffeeDataLoaded(bool value) {
+    _isCoffeeDataLoaded = value;
+    notifyListeners();
+  }
+
+  /// order now tab bar
+  List<Map<String, int>> _numberOfItemsAdded = [];
+  List<Map<String, int>> get numberOfItemsAdded => _numberOfItemsAdded;
+
+  void addItemInOrder(String id) {
+    try {
+      Map<String, int>? item = _numberOfItemsAdded.firstWhere(
+        (element) => element.keys.first == id,
+        orElse: () => {},
+      );
+
+      if (item.isEmpty) {
+        _numberOfItemsAdded.add({id: 1});
+        debugPrint("Item is added");
+      } else {
+        item[id] = (item[id] ?? 0) + 1;
+        debugPrint("Item is updated");
+      }
+
+      debugPrint("Items: ${_numberOfItemsAdded.toList()}");
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error while adding item: $e");
+    }
+  }
+
+  void removeItemFromOrder(String id) {
+    List<Map<String, int>> items = _numberOfItemsAdded
+        .where((element) => element.keys.first == id)
+        .toList();
+    if (items.isEmpty) {
+      debugPrint("items are not added for this id");
+    } else {
+      if (items.first[id]! <= 1) {
+        debugPrint("items can't be removed now since only item is there");
+      }
+      items.first[id] = (items.first[id] ?? 0) - 1;
+    }
+
+    notifyListeners();
+  }
+
+  int getNumberOfItemsAdded(String id) {
+    List<Map<String, int>> items = _numberOfItemsAdded
+        .where((element) => element.keys.first == id)
+        .toList();
+    if (items.isEmpty) {
+      return 0;
+    }
+    return items.first[id] ?? 0;
+  }
+
+  List<OfferModel> _allFetchedOffers = [];
+  List<OfferModel> get allFetchedOffers => _allFetchedOffers;
+  set allFetchedOffers(List<OfferModel> value) {
+    _allFetchedOffers = value;
+    notifyListeners();
+  }
+
+  Map<String, dynamic> getMapFinalDataToDisplay(CoffeeModel coffeeModel) {
+    String selectedSize = _sizes[getSelectedSizeIndex(coffeeModel.id)];
+    int numberOfItemsAdded = getNumberOfItemsAdded(coffeeModel.id);
+
+    double priceInDouble = coffeeModel.price.s;
+    if (selectedSize.toLowerCase() == 's') {
+      priceInDouble = coffeeModel.price.s;
+    } else if (selectedSize.toLowerCase() == 'm') {
+      priceInDouble = coffeeModel.price.m;
+    } else if (selectedSize.toLowerCase() == 'l') {
+      priceInDouble = coffeeModel.price.l;
+    }
+    double totalPrice =
+        priceInDouble * numberOfItemsAdded + coffeeModel.deliveryFee;
+    bool isDeleveryOfferApplied = _allFetchedOffers
+        .where((element) {
+          if (element.discountOn == 'delivery') {
+            return element.minPrice <= totalPrice;
+          } else {
+            return false;
+          }
+        })
+        .toList()
+        .isNotEmpty;
+    bool isOrderOfferApplied = _allFetchedOffers
+        .where((element) {
+          if (element.discountOn == 'order') {
+            return element.minOrder <= numberOfItemsAdded;
+          } else {
+            return false;
+          }
+        })
+        .toList()
+        .isNotEmpty;
+    double discountOnOrder = _allFetchedOffers
+        .firstWhere((element) => element.discountOn == 'order')
+        .discount;
+    double discountOnDelivery = _allFetchedOffers
+        .firstWhere((element) => element.discountOn == 'delivery')
+        .discount;
+    double discountedAmmountOnOrders = 0;
+    if (isOrderOfferApplied) {
+      discountedAmmountOnOrders =
+          coffeeModel.deliveryFee * discountOnOrder / 100;
+    }
+    double discountAmmountOnDelivery = 0;
+    if (isDeleveryOfferApplied) {
+      discountAmmountOnDelivery = priceInDouble * discountOnDelivery / 100;
+    }
+
+    double priceToDisplay = priceInDouble - discountAmmountOnDelivery;
+    double deliveryFeeToDisplay =
+        coffeeModel.deliveryFee - discountedAmmountOnOrders;
+    double totalPriceToDisplay =
+        totalPrice - (discountAmmountOnDelivery + discountedAmmountOnOrders);
+    Map<String, dynamic> finalData = {
+      "totalPriceToDisplay": totalPriceToDisplay,
+      "selectedSize": selectedSize,
+      "isDeleveryOfferApplied": isDeleveryOfferApplied,
+      'discountAmmountOnDelivery': discountAmmountOnDelivery,
+      'numberOfItemsAdded': numberOfItemsAdded,
+      'priceToDisplay': priceToDisplay,
+      'isOrderOfferApplied': isOrderOfferApplied,
+      'discountedAmmountOnOrders': discountedAmmountOnOrders,
+      'deliveryFeeToDisplay': deliveryFeeToDisplay,
+    };
+
+    return finalData;
   }
 }

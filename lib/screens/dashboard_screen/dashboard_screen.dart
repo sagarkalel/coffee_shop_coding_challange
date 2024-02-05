@@ -44,8 +44,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           },
         );
       }
-      ApiServices.getAllLikedCoffes();
-      ApiServices.getCoffeesFuture();
+      ApiServices.getUserDoc();
+      ApiServices.getAllCoffees();
+      ApiServices.getOffers();
     });
   }
 

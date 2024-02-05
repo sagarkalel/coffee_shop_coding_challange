@@ -12,9 +12,10 @@ class MyAppbar extends StatelessWidget {
     super.key,
     this.isTrailing = false,
     required this.coffeeId,
+    required this.title,
   });
   final bool isTrailing;
-  final String coffeeId;
+  final String coffeeId, title;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +30,7 @@ class MyAppbar extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
           ),
           Text(
-            "Detail",
+            title,
             style: Styles.titleLarge(context).weight(FontWeight.w600),
           ),
           if (isTrailing)
@@ -42,7 +43,7 @@ class MyAppbar extends StatelessWidget {
                       ? Icons.favorite
                       : Icons.favorite_border_outlined),
                   onPressed: () async {
-                    await ApiServices.updateFavoriteCoffee(coffeeId);
+                    await ApiServices.updateFavoriteCoffee(context, coffeeId);
                   },
                 );
               },

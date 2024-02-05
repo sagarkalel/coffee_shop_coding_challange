@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:first_challange_coffee_shop/data/coffee_model.dart';
+import 'package:first_challange_coffee_shop/data/offer_model.dart';
 import 'package:first_challange_coffee_shop/models/address_model.dart';
 import 'package:first_challange_coffee_shop/provider/provider.dart';
 import 'package:first_challange_coffee_shop/screens/otp_screen/otp_screen.dart';
@@ -150,8 +151,18 @@ class ApiServices {
               ),
               (route) => false);
         } else {
-          Navigator.pushNamedAndRemoveUntil(
-              context, AppRoutes.dashboardScreen, (route) => false);
+          if (user.data()!.containsKey('name') &&
+              (user.data()!['name'] != null || user.data()!['name'] != '')) {
+            Navigator.pushNamedAndRemoveUntil(
+                context, AppRoutes.dashboardScreen, (route) => false);
+          } else {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SignupScreen(),
+                ),
+                (route) => false);
+          }
         }
         provider.isLoading = false;
       });
@@ -170,13 +181,18 @@ class ApiServices {
     provider.isLoading = true;
     try {
       CollectionReference user = FirebaseFirestore.instance.collection("user");
-      await user.doc(provider.uid).set({
-        'name': name,
-        'phone': provider.phoneNumber,
-        'uid': provider.uid,
-        'image': '',
-      });
-      Navigator.pushNamed(context, AppRoutes.dashboardScreen);
+      await user.doc(provider.uid).set(
+        {
+          'name': name,
+          'phone': provider.phoneNumber,
+          'uid': provider.uid,
+          'image': '',
+        },
+        SetOptions(merge: true),
+      );
+      provider.userName = name;
+      Navigator.pushNamedAndRemoveUntil(
+          context, AppRoutes.dashboardScreen, (route) => false);
       provider.isLoading = false;
     } catch (e) {
       provider.isLoading = false;
@@ -215,20 +231,22 @@ class ApiServices {
   //   });
   // }
 
-  static Future<List<CoffeModel>> getCoffeesFuture() async {
-    List<CoffeModel> allCoffees = [];
+  static Future<List<CoffeeModel>> getAllCoffees() async {
+    List<CoffeeModel> allCoffees = [];
     MyProvider provider = MyProvider();
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
           await FirebaseFirestore.instance.collection("coffee").get();
       allCoffees = querySnapshot.docs
-          .map((doc) => CoffeModel.fromMap(doc.data()))
+          .map((doc) => CoffeeModel.fromMap(doc.data()))
           .toList();
       provider.allCoffees = allCoffees;
+      provider.isCoffeeDataLoaded = true;
       return allCoffees;
     } catch (e) {
       debugPrint("getting error while streaming coffee data: $e");
       provider.allCoffees = allCoffees;
+      provider.isCoffeeDataLoaded = true;
       return allCoffees;
     }
   }
@@ -251,40 +269,42 @@ class ApiServices {
   //   });
   // }
 
-  static Future<List<String>> getAllLikedCoffes() async {
-    List<String> allLikedCoffees = [];
+  static Future<Map<String, dynamic>> getUserDoc() async {
     MyProvider provider = MyProvider();
     try {
-      var userDoc = await FirebaseFirestore.instance
-          .collection('user')
-          .doc(MyProvider().uid)
-          .get();
-      if (userDoc.data() != null &&
-          userDoc.data()!.containsKey("liked_coffees")) {
-        allLikedCoffees = List<String>.from(userDoc.data()!['liked_coffees']);
-        provider.allLikedCoffees = allLikedCoffees;
-        debugPrint("these are all liked coffes: $allLikedCoffees");
-        return allLikedCoffees;
+      String _uid = FirebaseAuth.instance.currentUser!.uid;
+      var userDoc =
+          await FirebaseFirestore.instance.collection('user').doc(_uid).get();
+      if (userDoc.data() != null) {
+        if (userDoc.data()!.containsKey("liked_coffees")) {
+          provider.allLikedCoffees =
+              List<String>.from(userDoc.data()!['liked_coffees']);
+        }
+        if (userDoc.data()!.containsKey("coffees_in_cart")) {
+          provider.coffeesAddedInCart =
+              List<String>.from(userDoc.data()!['coffees_in_cart']);
+        }
+        provider.userName = userDoc.data()!['name'];
+        provider.phoneNumber = userDoc.data()!['phone'];
+        return userDoc.data() ?? {};
       } else {
-        provider.allLikedCoffees = allLikedCoffees;
-        debugPrint(
-            "these are all liked coffes but got null or not contains: ${MyProvider().uid}");
-        return allLikedCoffees;
+        provider.allLikedCoffees = [];
+        debugPrint("these are all liked coffes but got null");
+        return {};
       }
     } catch (e) {
       debugPrint("error is getting while gettin likedCoffees: $e");
-      provider.allLikedCoffees = allLikedCoffees;
-      return allLikedCoffees;
+      provider.allLikedCoffees = [];
+      return {};
     }
   }
 
-  static Future<void> updateFavoriteCoffee(String coffeeId) async {
+  static Future<void> updateFavoriteCoffee(context, String coffeeId) async {
     try {
+      String _uid = FirebaseAuth.instance.currentUser!.uid;
       MyProvider().updateFavoriteCoffee(coffeeId);
-      var userDoc = await FirebaseFirestore.instance
-          .collection("user")
-          .doc(MyProvider().uid)
-          .get();
+      var userDoc =
+          await FirebaseFirestore.instance.collection("user").doc(_uid).get();
       if (userDoc.data() != null &&
           userDoc.data()!.containsKey("liked_coffees")) {
         List<String> allLikedCoffes =
@@ -292,20 +312,60 @@ class ApiServices {
 
         if (allLikedCoffes.contains(coffeeId)) {
           allLikedCoffes.remove(coffeeId);
+          showSnackbar(context, text: "Removed from favorite.");
         } else {
           allLikedCoffes.add(coffeeId);
+          showSnackbar(context, text: "Added to favorite.");
         }
         await userDoc.reference.update({'liked_coffees': allLikedCoffes});
       } else if (userDoc.data() != null) {
-        var doc =
-            FirebaseFirestore.instance.collection("user").doc(MyProvider().uid);
-        doc.set({
-          'liked_coffees': [coffeeId]
-        });
+        var doc = FirebaseFirestore.instance.collection("user").doc(_uid);
+        doc.set(
+          {
+            'liked_coffees': [coffeeId]
+          },
+          SetOptions(merge: true),
+        );
+        showSnackbar(context, text: "Added to favorite.");
       }
       debugPrint("added to favorite successfully");
     } catch (e) {
       debugPrint("error getting while adding favorite: $e");
+    }
+  }
+
+  static Future<void> updateCoffeesInCart(context, String coffeeId) async {
+    try {
+      String _uid = FirebaseAuth.instance.currentUser!.uid;
+      MyProvider().updateCoffeesInCart(coffeeId);
+      var userDoc =
+          await FirebaseFirestore.instance.collection("user").doc(_uid).get();
+      if (userDoc.data() != null &&
+          userDoc.data()!.containsKey("coffees_in_cart")) {
+        List<String> allCoffesInCart =
+            List<String>.from(userDoc.data()!['coffees_in_cart']);
+
+        if (allCoffesInCart.contains(coffeeId)) {
+          allCoffesInCart.remove(coffeeId);
+          showSnackbar(context, text: "Removed from cart.");
+        } else {
+          allCoffesInCart.add(coffeeId);
+          showSnackbar(context, text: "Added to from cart.");
+        }
+        await userDoc.reference.update({'coffees_in_cart': allCoffesInCart});
+      } else if (userDoc.data() != null) {
+        var doc = FirebaseFirestore.instance.collection("user").doc(_uid);
+        doc.set(
+          {
+            'coffees_in_cart': [coffeeId]
+          },
+          SetOptions(merge: true),
+        );
+        showSnackbar(context, text: "Added to from cart.");
+      }
+      debugPrint("coffee added in cart successfully");
+    } catch (e) {
+      debugPrint("error getting while adding coffee in cart: $e");
     }
   }
 
@@ -315,6 +375,28 @@ class ApiServices {
       return false;
     } else {
       return provider.allLikedCoffees.contains(coffeeId);
+    }
+  }
+
+  static bool isGivenCoffeeAddedInCart(
+      {required String coffeeId, required MyProvider provider}) {
+    if (provider.coffeesAddedInCart.isEmpty) {
+      return false;
+    } else {
+      return provider.coffeesAddedInCart.contains(coffeeId);
+    }
+  }
+
+  static Future<void> getOffers() async {
+    try {
+      var querySnapshot =
+          await FirebaseFirestore.instance.collection('offers').get();
+      List<OfferModel> allOffers =
+          querySnapshot.docs.map((e) => OfferModel.fromMap(e.data())).toList();
+      MyProvider().allFetchedOffers = allOffers;
+      debugPrint("successfully fetched all offers! ${allOffers.length}");
+    } catch (e) {
+      debugPrint("some error is getting while getting offers: $e");
     }
   }
 }

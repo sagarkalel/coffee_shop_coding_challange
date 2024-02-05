@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:first_challange_coffee_shop/utils/constatnts/routes_constants.dart';
+import 'package:first_challange_coffee_shop/utils/extensions/textstyle_extensions.dart';
+import 'package:first_challange_coffee_shop/utils/extensions/widget_extensions.dart';
+import 'package:first_challange_coffee_shop/utils/themes/colors_theme.dart';
 import 'package:first_challange_coffee_shop/utils/themes/textstyles_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,9 +44,20 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text(
-          "Welcome to coffee shop!",
-          style: Styles.headlineLarge(context),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.coffee,
+              size: 150,
+              color: ThemeColors.brownColor.withOpacity(0.2),
+            ),
+            xGap(16),
+            Text(
+              "Welcome to coffee shop!",
+              style: Styles.headlineLarge(context).weight(FontWeight.w600),
+            ),
+          ],
         ),
       ),
     );

@@ -20,6 +20,12 @@ extension WidgetExtension on Widget {
       Padding(padding: EdgeInsets.only(bottom: y), child: this);
   Widget padAll(double all) =>
       Padding(padding: EdgeInsets.all(all), child: this);
+
+  Widget clipRect(double r) => ClipRRect(
+        borderRadius: BorderRadius.circular(r),
+        clipBehavior: Clip.hardEdge,
+        child: this,
+      );
 }
 
 /// gap
