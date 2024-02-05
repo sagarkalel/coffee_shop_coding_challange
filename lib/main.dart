@@ -44,9 +44,6 @@ class MyApp extends StatelessWidget {
         '/dashboardScreen': (_) => const DashboardScreen(),
         '/addCoffeeScreen': (_) => const AddCoffeeScreen(),
         '/homeScreen': (_) => const HomeScreen(),
-        // '/favoriteScreen': (_) => const FavoriteScreen(),
-        // '/cartScreen': (_) => const CartScreen(),
-        // '/notificationScreen': (_) => const NotificationScreen(),
         '/profileScreen': (_) => const ProfileScreen(),
         '/phoneInputScreen': (_) => const PhoneInputScreen(),
       },
@@ -54,3 +51,24 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+/*
+####### IMPORTANT #######
+
+PLEASE USE FOLLOWING AUTH CREDENSIAL FOR TESTING
+
+PHONE NUMBER: 
+
+## account is already created
++11111111111
+
+## account can create
++11234567890
++912222222222
++918605558038
+
+PASSWORD 
+## NOTE: same password for all numbers
+123456
+
+*/
